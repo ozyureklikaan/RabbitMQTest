@@ -1,0 +1,9 @@
+﻿global using RabbitMQTest;
+global using MassTransit;
+global using MediatR;
+global using RabbitMQTest.Models;
+global using RabbitMQTest.Commands;
+global using RabbitMQTest.Handlers;
+global using Microsoft.AspNetCore.Http;
+global using Microsoft.AspNetCore.Mvc;
+global using RabbitMQTest.Consumers;

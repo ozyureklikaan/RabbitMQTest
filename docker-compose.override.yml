@@ -1,0 +1,17 @@
+version: '3.9'
+
+services:
+  rabbitmq:
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+  rabbitmqtest.api:
+    container_name: rabbitmqtest.api
+    restart: on-failure
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - RabbitMQUrl=rabbitmq
+    ports:
+      - "5001:80"

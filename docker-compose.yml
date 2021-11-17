@@ -1,0 +1,12 @@
+version: '3.9'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.9.0-management
+  rabbitmqtest.api:
+    image: rabbitmqtest_api_image
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - rabbitmq
