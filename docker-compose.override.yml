@@ -1,6 +1,17 @@
 version: '3.9'
 
 services:
+  rabbitmqtestdb:
+    container_name: rabbitmqtestdb
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes: 
+      - rabbitmqtestdb_volume:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=Password1*
+      - POSTGRES_DB=rabbitmqtestdb
   rabbitmq:
     container_name: rabbitmq
     restart: always
@@ -15,3 +26,6 @@ services:
       - RabbitMQUrl=rabbitmq
     ports:
       - "5001:80"
+    depends_on:
+      - rabbitmq
+      - rabbitmqtestdb

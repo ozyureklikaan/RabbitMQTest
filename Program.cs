@@ -1,6 +1,6 @@
 var builder = WebApplication.CreateBuilder(args);
 
-IConfiguration Configuration = builder.Configuration;
+IConfiguration configuration = builder.Configuration;
 
 // Add services to the container.
 builder.Services.AddMassTransit(x =>
@@ -11,7 +11,7 @@ builder.Services.AddMassTransit(x =>
     // Default Port: 5672
     x.UsingRabbitMq((context, cfg) =>
     {
-        cfg.Host(Configuration["RabbitMQUrl"], "/", host =>
+        cfg.Host(configuration["RabbitMQUrl"], "/", host =>
         {
             host.Username("guest");
             host.Password("guest");
@@ -25,6 +25,14 @@ builder.Services.AddMassTransit(x =>
     });
 });
 
+//builder.Services.AddDbContext<BosMessageQueueDbContext>(opt =>
+//{
+//    opt.UseNpgsql(configuration.GetConnectionString("PostgreSql"), configure =>
+//    {
+//        configure.MigrationsAssembly("RabbitMQTest");
+//    });
+//});
+
 builder.Services.AddMassTransitHostedService();
 
 builder.Services.AddMediatR(typeof(CreateNewRequestCommandHandler).Assembly);
@@ -35,6 +43,17 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+// Localization
+var supportedCultures = new[] { new CultureInfo("tr-TR") };
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture("tr-TR"),
+    // Formatting numbers, dates, etc.
+    SupportedCultures = supportedCultures,
+    // UI strings that we have localized.
+    SupportedUICultures = supportedCultures
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
