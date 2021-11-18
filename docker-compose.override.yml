@@ -24,6 +24,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - RabbitMQUrl=rabbitmq
+      - "ConnectionStrings__PostgreSql=User ID=admin; Password=Password1*; Server=rabbitmqtestdb; Port=5432; Database=rabbitmqtestdb; Integrated Security=true; Pooling=true"
     ports:
       - "5001:80"
     depends_on:

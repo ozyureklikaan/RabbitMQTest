@@ -12,7 +12,7 @@ using RabbitMQTest.Context;
 namespace RabbitMQTest.Migrations
 {
     [DbContext(typeof(BosMessageQueueDbContext))]
-    [Migration("20211117105846_initial")]
+    [Migration("20211117124411_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -25,17 +25,18 @@ builder.Services.AddMassTransit(x =>
     });
 });
 
-//builder.Services.AddDbContext<BosMessageQueueDbContext>(opt =>
-//{
-//    opt.UseNpgsql(configuration.GetConnectionString("PostgreSql"), configure =>
-//    {
-//        configure.MigrationsAssembly("RabbitMQTest");
-//    });
-//});
+builder.Services.AddDbContext<BosMessageQueueDbContext>(opt =>
+{
+    opt.UseNpgsql(configuration.GetConnectionString("PostgreSql"));
+});
 
 builder.Services.AddMassTransitHostedService();
 
 builder.Services.AddMediatR(typeof(CreateNewRequestCommandHandler).Assembly);
+
+var cultureInfo = new CultureInfo("tr-TR");
+CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -54,6 +55,16 @@ app.UseRequestLocalization(new RequestLocalizationOptions
     // UI strings that we have localized.
     SupportedUICultures = supportedCultures
 });
+
+// Migration
+using (var scope = app.Services.CreateScope())
+{
+    var serviceProvider = scope.ServiceProvider;
+
+    var orderDbContext = serviceProvider.GetRequiredService<BosMessageQueueDbContext>();
+
+    orderDbContext.Database.Migrate();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
