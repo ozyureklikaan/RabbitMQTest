@@ -1,5 +1,10 @@
 var builder = WebApplication.CreateBuilder(args);
 
+// Add services to the container.
+#region Get Configuration
+IConfiguration configuration = builder.Configuration;
+#endregion
+
 #region Autofac
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
@@ -9,9 +14,6 @@ builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
 });
 #endregion
 
-IConfiguration configuration = builder.Configuration;
-
-// Add services to the container.
 #region MassTransit
 builder.Services.AddMassTransit(x =>
 {
