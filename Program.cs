@@ -1,8 +1,18 @@
 var builder = WebApplication.CreateBuilder(args);
 
+#region Autofac
+builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
+builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
+{
+    containerBuilder.RegisterModule(new MediatorModule());
+    containerBuilder.RegisterModule(new DataAccessModule());
+});
+#endregion
+
 IConfiguration configuration = builder.Configuration;
 
 // Add services to the container.
+#region MassTransit
 builder.Services.AddMassTransit(x =>
 {
     // Command and Event Consumers
@@ -25,18 +35,26 @@ builder.Services.AddMassTransit(x =>
     });
 });
 
+builder.Services.AddMassTransitHostedService();
+#endregion
+
+#region DbContext
 builder.Services.AddDbContext<BosMessageQueueDbContext>(opt =>
 {
     opt.UseNpgsql(configuration.GetConnectionString("PostgreSql"));
 });
 
-builder.Services.AddMassTransitHostedService();
+//builder.Services.AddDbContext<BosDbContext>(options =>
+//{
+//    options.UseSqlServer(configuration.GetConnectionString("BosDb"));
+//});
+#endregion
 
-builder.Services.AddMediatR(typeof(CreateNewRequestCommandHandler).Assembly);
-
+#region Culture
 var cultureInfo = new CultureInfo("tr-TR");
 CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
 CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+#endregion
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -45,7 +63,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Localization
+#region Localization
 var supportedCultures = new[] { new CultureInfo("tr-TR") };
 app.UseRequestLocalization(new RequestLocalizationOptions
 {
@@ -55,8 +73,9 @@ app.UseRequestLocalization(new RequestLocalizationOptions
     // UI strings that we have localized.
     SupportedUICultures = supportedCultures
 });
+#endregion
 
-// Migration
+#region Migration
 using (var scope = app.Services.CreateScope())
 {
     var serviceProvider = scope.ServiceProvider;
@@ -65,6 +84,7 @@ using (var scope = app.Services.CreateScope())
 
     orderDbContext.Database.Migrate();
 }
+#endregion
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
