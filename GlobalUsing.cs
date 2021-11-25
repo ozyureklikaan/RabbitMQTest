@@ -21,3 +21,4 @@ global using Autofac.Extensions.DependencyInjection;
 global using RabbitMQTest.Data;
 global using RabbitMQTest.Domain.Policy;
 global using RabbitMQTest.Queries;
+global using RabbitMQTest.Data.EntityTypeConfigurations.BosMessageQueueEntityTypeConfigurations;

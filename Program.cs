@@ -1,6 +1,7 @@
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+#region Add services to the container
 #region Get Configuration
 IConfiguration configuration = builder.Configuration;
 #endregion
@@ -40,18 +41,6 @@ builder.Services.AddMassTransit(x =>
 builder.Services.AddMassTransitHostedService();
 #endregion
 
-#region DbContext
-builder.Services.AddDbContext<BosMessageQueueDbContext>(opt =>
-{
-    opt.UseNpgsql(configuration.GetConnectionString("PostgreSql"));
-});
-
-//builder.Services.AddDbContext<BosDbContext>(options =>
-//{
-//    options.UseSqlServer(configuration.GetConnectionString("BosDb"));
-//});
-#endregion
-
 #region Culture
 var cultureInfo = new CultureInfo("tr-TR");
 CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
@@ -62,9 +51,12 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+#endregion
 
 var app = builder.Build();
 
+// Configure the HTTP request pipeline.
+#region Configure the HTTP request pipeline
 #region Localization
 var supportedCultures = new[] { new CultureInfo("tr-TR") };
 app.UseRequestLocalization(new RequestLocalizationOptions
@@ -77,18 +69,6 @@ app.UseRequestLocalization(new RequestLocalizationOptions
 });
 #endregion
 
-#region Migration
-using (var scope = app.Services.CreateScope())
-{
-    var serviceProvider = scope.ServiceProvider;
-
-    var orderDbContext = serviceProvider.GetRequiredService<BosMessageQueueDbContext>();
-
-    orderDbContext.Database.Migrate();
-}
-#endregion
-
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -100,5 +80,6 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+#endregion
 
 app.Run();
